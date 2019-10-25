@@ -49,7 +49,6 @@ public class CCNR{
 			}while (!lenghtok);
 			repeat = isMoreCredit();
 		}while (repeat);
-		
 		JOptionPane.showMessageDialog(null, "Das Programm wird nun beendet");
 	}
 
