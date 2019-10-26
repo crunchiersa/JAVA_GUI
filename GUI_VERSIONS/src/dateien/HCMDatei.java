@@ -138,7 +138,8 @@ public class HCMDatei extends Datei {
 
 	private int getsegLaenge(String seg) {
 		int segLaenge = 0;
-		//Kopf, Patientenstamm, Fall, Anforderung, Anamnese, medizinische Fragestellung, medizinische Leistung, ergänzender Text, Risikofaktor, Risikofaktor-Bemerkung, Ende
+		/* Kopf, Patientenstamm, Fall, Anforderung, Anamnese, medizinische Fragestellung, 
+		 * medizinische Leistung, ergänzender Text, Risikofaktor, Risikofaktor-Bemerkung, Ende */
 		int healaenge = 97;
 		int patlaenge = 743;
 		int fallaenge = 2900;
@@ -177,13 +178,31 @@ public class HCMDatei extends Datei {
 		}
 		return segLaenge;
 	}
-	//TODO: Logik für finden derGesamtlänge anhand aller Segmente in mesgStruktur.
+	
 	private int getgesLaenge() {
-		int gesLaenge = 0;
+		int gesLaenge = 0, seglaenge;
+		int anzahlsegm = this.mesgStruktur.size();
 		
-
+		for (int i = 0; i < anzahlsegm; i++) {
+			seglaenge = getsegLaenge(this.mesgStruktur.get(i));
+			gesLaenge = gesLaenge + seglaenge;
+		}
 		return gesLaenge;
 	}
 	
+	//true --> message has the correct lenght, false --> message is too long or too short.
+	private boolean checklenght() {
+		boolean lenght;
+		int laenge, gesamlaenge;
+		
+		laenge = this.nachricht.length();
+		gesamlaenge = this.getgesLaenge();
+		if (laenge < gesamlaenge || laenge > gesamlaenge) {
+			lenght = false;
+		} else {
+			lenght = true;
+		}
+		return lenght;
+	}
 
 }
