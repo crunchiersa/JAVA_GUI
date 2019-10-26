@@ -49,11 +49,6 @@ public class CCNR{
 			}while (!lenghtok);
 			repeat = isMoreCredit();
 		}while (repeat);
-<<<<<<< HEAD
-		
-=======
->>>>>>> refs/heads/development
-		JOptionPane.showMessageDialog(null, "Das Programm wird nun beendet");
 	}
 
 	protected static boolean isMoreCredit () throws IOException {
