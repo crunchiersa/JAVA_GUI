@@ -130,9 +130,9 @@ public class DiceWordPasswort extends Wort {
 					break; 
 					case ("french"):	reply = this.retrieveFrenchDiceWordfromDatabase(wurfnummer);
 					break; 
-					case ("spanish"):	reply = this.retrieveGermanDiceWordfromDatabase(wurfnummer);
+					case ("spanish"):	reply = this.retrieveSpanishDiceWordfromDatabase(wurfnummer);
 					break; 
-					case ("eff"):		reply = this.retrieveGermanDiceWordfromDatabase(wurfnummer);
+					case ("eff"):		reply = this.retrieveEFFDiceWordfromDatabase(wurfnummer);
 					break; 
 					default:			
 					break;
