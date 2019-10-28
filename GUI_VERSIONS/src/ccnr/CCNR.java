@@ -28,7 +28,6 @@ public class CCNR{
 				ccnr = JOptionPane.showInputDialog(null, "Dieses Programm dient dazu zu überprüfen, ob die eingegebenen Kreditkartennummer zulässig ist. \n Bitte geben Sie die Kreditkartennummer ein: ");
 
 				//Prüfung ob eingegebene Zahl 16 Stellen hat
-
 				if(ccnr.length() < 16){
 					JOptionPane.showMessageDialog(null, "Die eingegebene Zahl ist zu kurz und daher keine gültige Kreditkartennummer.");
 					lenghtok = false;
