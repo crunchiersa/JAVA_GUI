@@ -17,7 +17,7 @@ public class DiceWordPasswort extends Wort {
 	    private String database;
 	    private final String drivercomp = "jdbc:mysql:";
 	    private final String driver = "com.mysql.cj.jdbc.Driver";
-	    private final String timezone = "?serverTimezone=UTC";
+	    private final String timezone = "?serverTimezone=UTC"; //If Timeformat on server differs from UTC timestamps will be read incorrectly! 
 	    private String userName; 
 	    private String password;
 	    private String queryresult;
@@ -48,7 +48,7 @@ public class DiceWordPasswort extends Wort {
 	    }
 	    
 	    public String getIp() {
-			return ip;
+			return this.ip;
 		}
 
 		public void setIp(String ip) {
@@ -57,7 +57,7 @@ public class DiceWordPasswort extends Wort {
 		}
 
 		public String getPort() {
-			return port;
+			return this.port;
 		}
 
 		public void setPort(String port) {
@@ -66,7 +66,7 @@ public class DiceWordPasswort extends Wort {
 		}
 
 		public String getDatabase() {
-			return database;
+			return this.database;
 		}
 
 		public void setDatabase(String database) {
@@ -75,7 +75,7 @@ public class DiceWordPasswort extends Wort {
 		}
 
 		public String getDrivercomp() {
-			return drivercomp;
+			return this.drivercomp;
 		}
 
 		private void setUrl(String drivercomp, String ip, String port, String database) {
@@ -97,11 +97,11 @@ public class DiceWordPasswort extends Wort {
 	    }
 
 	    public String getQueryresult() {
-		return queryresult;
+		return this.queryresult;
 	    }
 
 	    public String getConnectionerror() {
-		return connectionerror;
+		return this.connectionerror;
 	    }
 	    
 		//Erstellt eine Zahl für die Datenbankabfrage für das DiceWord.
@@ -156,9 +156,8 @@ public class DiceWordPasswort extends Wort {
 		//Overloaded Method possibility to choose language and number of words to use.
 		public String genDWpasswd() throws IOException{
 			String sprache;
-			int b = 1;
-			int language = DiceWordPasswort.getInput(2);
-			int anzahlwoerter = DiceWordPasswort.getInput(3);
+			int language = DiceWordPasswort.getInput(1);
+			int anzahlwoerter = DiceWordPasswort.getInput(2);
 			switch (language) {
 			case (0): 	sprache = "german";
 			break;
@@ -188,27 +187,44 @@ public class DiceWordPasswort extends Wort {
 		do {
 		    while (more == true){
 			switch(auswahl){
-			case (1):	eingabe = JOptionPane.showInputDialog("Möchten Sie ein englisches Dice-Password(1), deutsches Dice-Password(2) oder ein zufällig erstelltes Passwort(3) generieren?");
-			break;
-			case (2):	int sprache  = JOptionPane.showOptionDialog(null, "Welche Sprache soll das Kennwort haben? ", "Sprachwahl", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]); 
+			case (1):	int sprache  = JOptionPane.showOptionDialog(null, "Welche Sprache soll das Kennwort haben? ", "Sprachwahl", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]); 
 						eingabe = String.valueOf(sprache);//Bei der vorherigen Abfrage werden die Ergebnisse als int 0 - 4 zurückgegeben, abhängig von der Stelle im Array options[].
 			break;
-			case (3):	eingabe = JOptionPane.showInputDialog("Wie viele Dice-Worte soll Ihr neues Passwort haben?");
+			case (2):	eingabe = JOptionPane.showInputDialog("Wie viele Dice-Worte soll Ihr neues Passwort haben?");
 			break;
-			case (4):	eingabe = JOptionPane.showInputDialog("Wie viele Zeichen soll das Passwort haben? ");
-			break;
-			case (5):	eingabe = JOptionPane.showInputDialog("Wie viele Zahlen sollen generiert werden? ");
+			case (3):	eingabe = JOptionPane.showInputDialog("Wie viele Zeichen soll das Passwort haben? ");
 			break;
 			}
-			try {
-			    choice = Integer.parseInt(eingabe);
+			// eingabe is parsed to Integer. Handling if eingabe is not a number.
+			choice = DiceWordPasswort.isInteger(eingabe);
+			if (choice == 99) {
+				JOptionPane.showMessageDialog(null, "Keine gültige Zahl!");
+				DiceWordPasswort.getInput(2);
+			} else {
+				if (auswahl == 2 && choice >= 10) {
+					String optionen[] = {"Ja", "Nein"};
+			    	int response = JOptionPane.showOptionDialog(null , "Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
+			    	if (response == 1) {
+			    		int answer = DiceWordPasswort.getInput(2);
+			    		choice = answer;
+			    	}
+			    }
 			    more = false;
-			}catch (NumberFormatException nf){
-			    JOptionPane.showMessageDialog(null, "Keine gültige Zahl!");
 			}
 		   }
 		}while (more == true);
 		return choice;
+	    }
+	    
+	    //If choice is 99 --> String cannot be parsed into Integer.
+	    private static int isInteger(String eingabe) {
+	    	int choice;
+	    	try {
+	    		choice = Integer.parseInt(eingabe);
+	    	} catch (NumberFormatException nf){
+			    choice = 99;
+			}
+	    	return choice;
 	    }
 	    
 		//Variables SELECT
