@@ -217,7 +217,7 @@ public class DiceWordPasswort extends Wort {
 	    }
 	    
 	    //If choice is 99 --> String cannot be parsed into Integer.
-	    private static int isInteger(String eingabe) {
+	    public static int isInteger(String eingabe) {
 	    	int choice;
 	    	try {
 	    		choice = Integer.parseInt(eingabe);

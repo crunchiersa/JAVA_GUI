@@ -22,7 +22,7 @@ public class Datei {
 		private String dateiName;
 		private String speicherPfad;
 		private String zeilenInhalt;
-		private ArrayList<String> inhaltLesen, inhaltSchreiben;
+		private ArrayList<String> inhaltLesen = new ArrayList<String>(), inhaltSchreiben = new ArrayList<String>();
 		private String dateiEndung;
 		private String absolutePath;
 		private boolean nooverwrite; // Ob Datei überschrieben oder appended werden soll.
