@@ -6,6 +6,6 @@ public class CustomUnchecked extends RuntimeException {
 	
 	public CustomUnchecked(String mesg) {
 		super(mesg);
-		//ADD.
+		//ADD.CODE.
 	}
 }
