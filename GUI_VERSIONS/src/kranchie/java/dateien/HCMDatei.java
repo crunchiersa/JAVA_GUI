@@ -11,6 +11,10 @@ import javax.swing.JOptionPane;
 
 @SuppressWarnings("unused")
 public class HCMDatei extends Datei {
+    
+    /*----------------------*/
+    /* Constructor Methoden */
+    /*----------------------*/   
 
     private String	      dateiEndung  = ".dat";
     private ArrayList<String> mesgStruktur = new ArrayList<String>();
@@ -117,14 +121,23 @@ public class HCMDatei extends Datei {
 	// Prüft ob Stelle an der Segment eingefügt wird größer als die maximal
 	// Anzahl in Struktur ist oder an erster Stelle stehen soll.
 	if (reihenfolge > currsize) {
-	    this.priv_meth_newsegnumber(
+	   int neuereihenfolge =  this.priv_meth_newsegnumber(
 		    "So viele Segmente gibt es in der Struktur nicht. Bitte geben Sie eine Zahl kleiner " + currsize
 			    + " ein.");
+	    this.setMesgStruktSegment(segname, neuereihenfolge);
 	} else if (reihenfolge == 0) {
 	    reihenfolge = reihenfolge + 1;
 	}
-	// Segment in die Struktur hinzufügen und Struktur returnen.
-	this.mesgStruktur.add(reihenfolge, segname);
+	
+	//Prüfen ob Segment bereits enthalten ist.
+	int segnr = this.getSegmentnr(segname);
+	if(segnr == 666) {
+	    // Segment in die Struktur hinzufügen und Struktur returnen.
+	    this.mesgStruktur.add(reihenfolge, segname);
+	} else {
+	    //Segment ist bereits in der Struktur.
+	    JOptionPane.showMessageDialog(null, "Dieses Segment gibt es bereits. Das Segment ist an Stelle " + segnr + "." );
+	}
     }
     
     //Set content into mesg ArrayList at correct location. If segment is not yet in structure it is added.
