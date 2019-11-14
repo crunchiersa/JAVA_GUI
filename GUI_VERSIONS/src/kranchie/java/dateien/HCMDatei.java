@@ -24,7 +24,17 @@ public class HCMDatei extends Datei {
     public HCMDatei(String dateiName, String speicherPfad) {
 	super(dateiName, speicherPfad);
     }
+    
+    public HCMDatei(String dateiName, String speicherPfad, ArrayList<String> struktur, ArrayList<String> mesgContent) {
+	super(dateiName,speicherPfad);
+	this.mesgStruktur = struktur;
+	this.mesg = mesgContent;
+    }
 
+    /*-----------------*/
+    /* Public Methoden */
+    /*-----------------*/
+    
     public String getDateiEndung() {
 	return dateiEndung;
     }
@@ -32,36 +42,51 @@ public class HCMDatei extends Datei {
     public void setDateiEndung(String dateiEndung) {
 	this.dateiEndung = dateiEndung;
     }
-
-    public String getSegmentcontent(int segmentnr) {
-	String segmentcontent = this.mesg.get(segmentnr);
+    
+    public String getNachricht() {
+	return nachricht;
+    }
+    
+    public void setstructandmesg(String segname, int reihenfolge, String seginhalt) {
+	this.setMesgStruktSegment(segname, reihenfolge);
+	this.setMesgSegmentContent(segname, seginhalt);
+    }
+    
+    /*------------------*/
+    /* Private Methoden */
+    /*------------------*/
+    
+    //Get content of segment for specific segment given by name.
+    private String getSegmentcontent(String segment) {
+	int segnr = this.getSegmentnr(segment);
+	String segmentcontent = this.mesg.get(segnr);	
 	return segmentcontent;
     }
 
-    public int getSegmentnr(String segment) {
+    //Get segment number of specified segment. If segmentnr 666 is returned --> segment could not be found.
+    private int getSegmentnr(String segment) {
 	int	segmentnr = 0;
 	String	segname;
-	boolean	same;
+	boolean	same, found = false;
 	int	currsize  = this.mesgStruktur.size();
 	for (int i = 0; i <= currsize; i++) {
 	    segmentnr = i;
 	    segname   = this.mesgStruktur.get(i);
 	    same      = segname.equals(segment);
 	    if (same) {
+		found = true;
 		break;
 	    }
 	}
-	return segmentnr;
+	if (found) {
+	    return segmentnr;
+	} else {
+	    segmentnr = 666;
+	    return segmentnr;
+	}
     }
 
-    public String getNachricht() {
-	return nachricht;
-    }
-
-    /*----------------*/
-    /* AufbauMethoden */
-    /*----------------*/
-
+    //Set Anzahl an Leerzeichen
     private String leerfuellen(int anzahl) {
 	String leerzeichen = "";
 	for (int i = 0; i <= anzahl; i++) {
@@ -69,10 +94,10 @@ public class HCMDatei extends Datei {
 	}
 	return leerzeichen;
     }
-
+    
     // Set segment name passed as String into specified place
     // mesgStruktur-Array.
-    private void setMesgSegment(String nachricht, int reihenfolge) {
+    private void setMesgStruktSegment(String segname, int reihenfolge) {
 	ArrayList<String> mesgStruktur = new ArrayList<String>();
 	int		  order	       = reihenfolge;
 	// Determine number of items in Array. And fetch first and last segment.
@@ -99,7 +124,17 @@ public class HCMDatei extends Datei {
 	    reihenfolge = reihenfolge + 1;
 	}
 	// Segment in die Struktur hinzufügen und Struktur returnen.
-	this.mesgStruktur.add(reihenfolge, nachricht);
+	this.mesgStruktur.add(reihenfolge, segname);
+    }
+    
+    //Set content into mesg ArrayList at correct location. If segment is not yet in structure it is added.
+    private void setMesgSegmentContent(String segname, String segcontent) {
+	    int segnr = this.getSegmentnr(segname);
+	    if (segnr == 666) {
+		this.setMesgStruktSegment(segname, segnr);
+		this.setMesgSegmentContent(segname, segcontent);
+	    }
+	    this.mesg.add(segnr, segcontent);	
     }
 
     private void genSegment(String seg, String content) {
@@ -137,10 +172,8 @@ public class HCMDatei extends Datei {
 	}
 	return neueZahl;
     }
-    /*---------------*/
-    /* PruefMethoden */
-    /*---------------*/
 
+    //Gibt die Länge des Segments an
     private int getsegLaenge(String seg) {
 	int segLaenge = 0;
 	/*
@@ -193,11 +226,13 @@ public class HCMDatei extends Datei {
 		break;
 	    default:
 		segLaenge = 0;
+		JOptionPane.showMessageDialog(null, "Dieses Segment gibt es nicht.");
 		break;
 	}
 	return segLaenge;
     }
 
+    //Gibt die Gesamtlänge aller Segmente in der Nachricht wieder.
     private int getgesLaenge() {
 	int gesLaenge  = 0, seglaenge;
 	int anzahlsegm = this.mesgStruktur.size();
