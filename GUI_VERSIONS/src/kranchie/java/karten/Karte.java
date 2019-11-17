@@ -169,7 +169,14 @@ public class Karte {
 	return isSet;
     }
 
-    // Prüfen ob Kartennummer richtige länge hat.
+    /**
+     * Description: Prüft ob die Länge der Kartennummer mit der hinterlegten
+     * Kartennummerlänge übereinstimmt.
+     * 
+     * @author crunchie
+     * @return Boolean, true wird zurückgegeben, wenn beide Längen
+     *         übereinstimmen, false falls nicht.
+     */
     public boolean checklength() {
 	boolean	laengeok;
 	int	nrlaenge = this.kartenNummer.length();
@@ -185,13 +192,12 @@ public class Karte {
 
     /**
      * Description: Determine whether a Character is a number or not and return
-     * value of number as an Integer, if Character is a number. Checks if the
-     * Charakter is a number. If Charakter is a number the number is returned,
-     * otherwise the value -2 is returned.
+     * value of number as an Integer.
      * 
-     * @author           crunchie
-     * @param  Character
-     * @return           Integer
+     * @author crunchie
+     * @return Integer, gibt den Wert numerischen Wert des Characters der
+     *         mitgegeben wurde wieder. Falls der Parameter keine Zahl ist,
+     *         wird -2 zurückgegeben.
      */
     public int setwertcc(char u) {
 	int	a;
@@ -206,14 +212,14 @@ public class Karte {
 
     /**
      * Description: Die Methode prüft, ob die Länge der Kartennummer korrekt
-     * ist und nur positive Zahlen beinhaltet. Rückgabewerte: True = Die Nummer
-     * hat die richtige Länge und beinhaltet nur positive Zahlen. False = Die
-     * Nummer beinhaltet nicht nur Zahlen oder ist zu lang oder kurz. Der Grund
-     * wird mit ausgegeben.
+     * ist und nur positive Zahlen beinhaltet.
      * 
-     * @author         crunchie
-     * @param  Integer , String
-     * @return         Boolean
+     * @author crunchie
+     * @return Boolean, Wert true wird zurückgegeben, wenn die Kartennummer die
+     *         richtige Länge hat und nur positive Zahlen beinhaltet. Der Wert
+     *         false wird zurückgegeben, wenn die Kartennummer zu kurz oder zu
+     *         lang ist oder nicht nur Zahlen beinhaltet. Der Grund wird als
+     *         Popup ausgegeben.
      */
     public boolean checkLaenge(int length, String kartenart) {
 	boolean	pruefung;

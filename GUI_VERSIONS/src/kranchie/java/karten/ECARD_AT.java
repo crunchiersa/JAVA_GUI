@@ -36,7 +36,6 @@ public class ECARD_AT extends Karte {
      * Werte über- einstimmen, ist die Sozialversicherungsnummer gültig.
      * 
      * @author      crunchie
-     * @param  None
      * @return      Boolean. True = Die Sozialversicherungsnummer ist gültig.
      *              False = Die Sozialversicherungsnummer ist nicht gültig.
      */

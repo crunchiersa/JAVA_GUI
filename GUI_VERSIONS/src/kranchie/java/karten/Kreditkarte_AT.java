@@ -28,7 +28,6 @@ public class Kreditkarte_AT extends Karte {
      * Kreditkartennummer ungültig.
      * 
      * @author      crunchie
-     * @param  None
      * @return      Boolean. True = Kreditkartennummer ist gültig. False =
      *              Kreditkartennummer ist nicht gültig.
      */
