@@ -161,7 +161,38 @@ public class DiceWordPasswort extends Wort {
 	DiceWordPasswort.setClipboard(this.auslesen());
 	return this.auslesen();
     }
-
+    
+    // Overloaded Method possibility to choose language and number of words to
+    // use.
+    public String genDWpasswd(int anzahl) throws IOException {
+	String sprache;
+	int    language	     = DiceWordPasswort.getInput(1);
+	switch (language) {
+	    case (0):
+		sprache = "german";
+		break;
+	    case (1):
+		sprache = "english";
+		break;
+	    case (2):
+		sprache = "french";
+		break;
+	    case (3):
+		sprache = "spanish";
+		break;
+	    case (4):
+		sprache = "eff";
+		break;
+	    default:
+		JOptionPane.showMessageDialog(null, "Die Sprache " + language + " ist nicht verfügbar.");
+		sprache = "";
+		break;
+	}
+	this.genDWpasswd(sprache, anzahl);
+	DiceWordPasswort.setClipboard(this.auslesen());
+	return this.auslesen();
+    }
+    
     // Overloaded Method possibility to choose language and number of words to
     // use.
     public String genDWpasswd() throws IOException {
