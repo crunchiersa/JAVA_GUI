@@ -3,17 +3,14 @@ package kranchie.java.dateien;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import javax.swing.JOptionPane;
+import kranchie.java.customExceptions.CustomUnchecked;
 
-@SuppressWarnings("unused")
 public class Datei {
 
     /*-----------*/
@@ -22,36 +19,167 @@ public class Datei {
     private String	      dateiName;
     private String	      speicherPfad;
     private String	      zeilenInhalt;
-    private ArrayList<String> inhaltLesen = new ArrayList<String>(), inhaltSchreiben = new ArrayList<String>();
+    private ArrayList<String> inhaltLesen   = new ArrayList<String>(), inhaltSchreiben = new ArrayList<String>();
     private String	      dateiEndung;
     private String	      absolutePath;
-    private boolean	      nooverwrite;			// Ob Datei überschrieben oder appended werden soll.
+    private boolean	      nooverwrite;
+    private boolean	      validpath	    = false;
+    private boolean	      validname	    = false;
+    private boolean	      validending   = false;
+    private boolean	      validfullname = false;
+    private boolean	      validfullpath = false;
+
+    /* Constructor */
+    public Datei() {
+	this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"));
+	this.setSpeicherPfad(JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:"));
+	this.nooverwrite = true;
+    }
+
+    public Datei(String dateiName, String speicherPfad) {
+	super();
+	this.setDateiName(dateiName);
+	this.setSpeicherPfad(speicherPfad);
+	this.nooverwrite = true;
+    }
+
+    public Datei(String dateiName, String speicherPfad, boolean nooverwrite) {
+	super();
+	this.setDateiName(dateiName);
+	this.setSpeicherPfad(speicherPfad);
+	this.nooverwrite = nooverwrite;
+    }
 
     /*-------------------*/
     /* Getters + Setters */
     /*-------------------*/
 
     public String getDateiName() {
-	return dateiName;
+	return this.dateiName;
     }
 
-    public void setDateiName(String dateiName) {
-	this.dateiName = dateiName + this.dateiEndung;
-	this.setabsolutePath();
+    public String getdateieEndung() {
+	return this.dateiEndung;
+    }
+
+    public String getabsolutePath() {
+	return this.absolutePath;
+    }
+
+    private void setDateiName(String dateiName) {
+	if (this.validending || (this.validending && this.validpath)) {
+	    this.dateiName     = dateiName + "." + this.dateiEndung;
+	    this.validname     = true;
+	    this.validfullname = true;
+	    this.setabsolutePath();
+	} else {
+	    this.dateiName     = dateiName;
+	    this.validname     = true;
+	    this.validfullname = false;
+	}
+	
     }
 
     public void setdateiEndung(String endung) {
 	this.dateiEndung = endung;
-	this.dateiName	 = this.dateiName + this.dateiEndung;
-	this.setabsolutePath();
+	this.validending = true;
+	if (validname || (validname && validpath)) {
+	    this.setDateiName(this.dateiName);
+	} else if (validfullname) {
+	    String error = "Es gibt bereits eine Dateiendung (" + this.dateiEndung
+		    + ") es kann daher keine Dateiendung gesetzt werden.";
+	    throw new CustomUnchecked(error);
+	}
     }
 
-    public String getdateieEndung() {
-	return dateiEndung;
+    public void setSpeicherPfad(String speicherPfad) {
+	validpath = this.checkname_validpath(speicherPfad);
+	try {
+	    if (validpath) {
+		boolean writable = this.checkname_canwrite(speicherPfad);
+		if (writable) {
+		    this.speicherPfad = speicherPfad;
+		    this.validpath    = true;
+		} else {
+		    throw new CustomUnchecked("1");
+		}
+	    } else {
+		throw new CustomUnchecked("2");
+	    }
+	} catch (CustomUnchecked e) {
+	    String fehler = e.getMessage(), error;
+	    switch (fehler) {
+		case "1":
+		    error = " Sie haben unter dem angegebenen Pfad (" + speicherPfad + ") keine Schreibberechtigung.";
+		    break;
+		case "2":
+		    error = "Der angegebene Pfad (" + speicherPfad + ") existiert nicht.";
+		    break;
+		default:
+		    error = "Es ist ein unerwarteter Fehler aufgetreten. Die Fehlernachricht lautet: " + fehler;
+	    }
+	    throw new CustomUnchecked(error);
+	}
     }
 
-    private void setabsolutePath() {
-	this.absolutePath = this.speicherPfad + File.separator + this.dateiName;
+    private boolean setabsolutePath() {
+	String error  = "Es wurden die folgenden Variablen noch nicht befüllt: ";
+	String abpath = this.speicherPfad + File.separator + this.dateiName;
+	try {
+	    if (this.validfullname && this.validpath) {
+		boolean	validpath = this.checkname_validpath(this.speicherPfad);
+		boolean	canwrite  = this.checkname_canwrite(this.speicherPfad);
+		boolean	fileexist = this.checkname_fileexist(this.speicherPfad, this.dateiName);
+		try {
+		    if (!canwrite) {
+			throw new CustomUnchecked("1");
+		    } else if (!validpath) {
+			throw new CustomUnchecked("2");
+		    } else if (fileexist) {
+			this.setnooverwrite(this.priv_meth_ueberschreib());
+			if (nooverwrite) {
+			    throw new CustomUnchecked("3");
+			} else {
+			    this.absolutePath = abpath;
+			    return true;
+			}
+		    } else {
+			this.absolutePath = abpath;
+			return true;
+		    }
+		} catch (CustomUnchecked e) {
+		    String fehler = e.getMessage();
+		    switch (fehler) {
+			case "1":
+			    error = "Sie haben keine Schreibrechte unter " + this.speicherPfad;
+			    break;
+			case "2":
+			    error = "Der angegebene Pfad (" + this.speicherPfad + ") ist nicht gültig.";
+			    break;
+			case "3":
+			    error = "Die angegebene Datei existiert bereits unter dem Pfad.";
+			    break;
+			default:
+			    error = "Es ist ein unerwarteter Fehler aufgetreten.";
+			    break;
+		    }
+		    JOptionPane.showMessageDialog(null, error);
+		    return false;
+		}
+	    } else if (this.validpath && this.validname && !this.validfullname) {
+		throw new CustomUnchecked(error + "Dateiendung.");
+	    } else if (this.validname && !this.validpath && !this.validfullname) {
+		throw new CustomUnchecked(error + "Dateiendung, Speicherpfad.");
+	    } else if (this.validending && this.validfullname && !this.validpath) {
+		throw new CustomUnchecked(error + "Speicherpfad.");
+	    } else {
+		throw new CustomUnchecked("Es ist ein unerwarteter Fehler aufgetreten.");
+	    }
+	} catch (CustomUnchecked e) {
+	    String fehler = e.getMessage();
+	    JOptionPane.showMessageDialog(null, fehler);
+	    return false;
+	}
     }
 
     private void setnooverwrite(boolean a) {
@@ -60,11 +188,6 @@ public class Datei {
 
     public String getSpeicherPfad() {
 	return speicherPfad;
-    }
-
-    public void setSpeicherPfad(String speicherPfad) {
-	this.speicherPfad = speicherPfad;
-	this.setabsolutePath();
     }
 
     public String getZeilenInhalt(int zeile) {
@@ -80,32 +203,18 @@ public class Datei {
 	this.inhaltSchreiben = inhaltSchreiben;
     }
 
+    @SuppressWarnings("unused")
     private static void clearClipboard() {
 	StringSelection	stringSelection	= new StringSelection("");
 	Clipboard	clpbrd		= Toolkit.getDefaultToolkit().getSystemClipboard();
 	clpbrd.setContents(stringSelection, null);
     }
 
+    @SuppressWarnings("unused")
     private static void setClipboard(String content) {
 	StringSelection	stringSelection	= new StringSelection(content);
 	Clipboard	clpbrd		= Toolkit.getDefaultToolkit().getSystemClipboard();
 	clpbrd.setContents(stringSelection, null);
-    }
-
-    /* Constructor */
-    public Datei() {
-	this.dateiName	  = JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:");
-	this.speicherPfad = JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:");
-	this.nooverwrite  = true;
-	this.setabsolutePath();
-    }
-
-    public Datei(String dateiName, String speicherPfad) {
-	super();
-	this.dateiName	  = dateiName;
-	this.speicherPfad = speicherPfad;
-	this.nooverwrite  = true;
-	this.setabsolutePath();
     }
 
     /*-----------------*/
@@ -116,7 +225,7 @@ public class Datei {
      * Methode zum Einlesen der Datei. Falls die ganze Datei eingelesen werden
      * soll muss die Zeilenanzahl 0 sein.
      */
-    @SuppressWarnings("unused")
+
     public ArrayList<String> pub_einlesen(int zeile) throws IOException {
 	try {
 	    Scanner s = new Scanner(new File(this.absolutePath));
@@ -154,11 +263,11 @@ public class Datei {
     /* SchreibMethoden */
     /*-----------------*/
 
-    @SuppressWarnings("unused")
-    public void pub_pruefSchreib() throws IOException {
+    public boolean pub_pruefSchreib() throws IOException {
 	boolean	nameexist, newfilename, uebschreib, written;
 	int	zaehler	= 0;
-	nameexist = this.priv_meth_checkname(); // Prüfen ob Datei unter dem Pfad bereits existiert.
+	nameexist = this.checkname_fileexist(); // Prüfen ob
+	// Datei unter dem Pfad bereits existiert.
 	if (nameexist) {
 	    uebschreib = this.priv_meth_ueberschreib();
 	    while (nameexist && !uebschreib) {
@@ -168,11 +277,11 @@ public class Datei {
 		zaehler	    = zaehler + 1;
 		newfilename = this.priv_meth_newname();
 		if (newfilename) {
-		    nameexist = this.priv_meth_checkname();
+		    nameexist = this.checkname_fileexist();
 		}
 	    }
 	}
-	written = this.priv_meth_schreiben();
+	return written = this.priv_meth_schreiben();
     }
 
     /*
@@ -180,7 +289,7 @@ public class Datei {
      * parameters. status == true --> Der Schreibvorgang ist erfolgt. status ==
      * false --> Es ist ein Fehler aufgetreten.
      */
-    @SuppressWarnings("unused")
+
     private boolean priv_meth_schreiben() throws IOException {
 	boolean status;
 	// write the content in file
@@ -214,25 +323,62 @@ public class Datei {
 
     // true => Datei existiert unter diesem Pfad schon. false => Datei
     // existiert unter diesem Pfad nicht.
-    @SuppressWarnings("unused")
-    private boolean priv_meth_checkname() {
+
+    public boolean checkname_fileexist() {
 	File	datei	= new File(this.absolutePath);
 	boolean	fexists	= datei.exists();
-	boolean	vorhanden;
-
 	if (fexists) {
-	    vorhanden = true;
+	    return true;
 	} else {
-	    vorhanden = false;
+	    return false;
 	}
-	return vorhanden;
+    }
+
+    public boolean checkname_fileexist(String path, String filename) {
+	File	datei	= new File(path + File.pathSeparator + filename);
+	boolean	fexists	= datei.exists();
+	if (fexists) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    private boolean checkname_validpath(String path) {
+	File	datei	= new File(path);
+	boolean	fexists	= datei.exists();
+	if (fexists) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    private boolean checkname_canwrite(String path) {
+	File	datei  = new File(path);
+	boolean	fwrite = datei.canWrite();
+	if (fwrite) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    private boolean checkname_canwrite(String path, String filename) {
+	File	datei  = new File(path + File.pathSeparator + filename);
+	boolean	fwrite = datei.canWrite();
+	if (fwrite) {
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     // true => Neuer Name wurde vergeben. false => Kein neuer Name wurde
     // vergeben, nicht möglich.
-    @SuppressWarnings("unused")
+
     private boolean priv_meth_newname() {
-	boolean	namechanged, eingegeben;
+	boolean	namechanged;
 	String	antwort;
 	do {
 	    antwort = JOptionPane.showInputDialog(null, "Bitte geben Sie einen neuen Dateinamen an:");
@@ -246,7 +392,7 @@ public class Datei {
     }
 
     // true => die existierende Datei soll überschrieben werden.
-    @SuppressWarnings("unused")
+
     private boolean priv_meth_ueberschreib() {
 	boolean	ueberschreib = false;
 	int	dialogButton = JOptionPane.YES_OPTION;
@@ -261,5 +407,4 @@ public class Datei {
 	}
 	return ueberschreib;
     }
-
 }
