@@ -118,7 +118,17 @@ public class DiceWordPasswort extends Wort {
     // Erstellt ein DiceWord-Passwort in der gewünschten Sprache mit der Anzahl
     // von Wörtern.
     // Eingabemöglichkeiten Sprache: german, english,french,spanish,eff.
-    public String genDWpasswd(String sprache, int anzahlwoerter) {
+    public String genDWpasswd(String sprache, int anzahlwoerter) throws IOException {
+	if (anzahlwoerter >= 10) {
+	    String optionen[] = { "Ja", "Nein" };
+	    int	   response   = JOptionPane.showOptionDialog(null,
+		    "Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?", JOptionPane.DEFAULT_OPTION,
+		    JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
+	    if (response == 1) {
+		int answer = DiceWordPasswort.getInput(2);
+		anzahlwoerter = answer;
+	    }
+	}
 	String password	= "", reply = "", output = "";
 	int    b	= 1;
 	if (sprache.equals("german") || sprache.equals("english") || sprache.equals("french")
@@ -161,12 +171,22 @@ public class DiceWordPasswort extends Wort {
 	DiceWordPasswort.setClipboard(this.auslesen());
 	return this.auslesen();
     }
-    
+
     // Overloaded Method possibility to choose language and number of words to
     // use.
     public String genDWpasswd(int anzahl) throws IOException {
 	String sprache;
-	int    language	     = DiceWordPasswort.getInput(1);
+	if (anzahl >= 10) {
+	    String optionen[] = { "Ja", "Nein" };
+	    int	   response   = JOptionPane.showOptionDialog(null,
+		    "Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?", JOptionPane.DEFAULT_OPTION,
+		    JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
+	    if (response == 1) {
+		int answer = DiceWordPasswort.getInput(2);
+		anzahl = answer;
+	    }
+	}
+	int    language	= DiceWordPasswort.getInput(1);
 	switch (language) {
 	    case (0):
 		sprache = "german";
@@ -192,7 +212,7 @@ public class DiceWordPasswort extends Wort {
 	DiceWordPasswort.setClipboard(this.auslesen());
 	return this.auslesen();
     }
-    
+
     // Overloaded Method possibility to choose language and number of words to
     // use.
     public String genDWpasswd() throws IOException {
