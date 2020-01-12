@@ -28,6 +28,12 @@ public class DiceWord_sqlite extends DiceWord {
     public DiceWord_sqlite() {
 	super();
     }
+    
+    public DiceWord_sqlite(Datei datei) {
+	super();
+	Datei file = datei;
+	this.setfullpath(file);
+    }
 
     public String getfullpath() {
 	return this.fullpath;
