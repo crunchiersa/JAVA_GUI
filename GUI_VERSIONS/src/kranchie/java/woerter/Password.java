@@ -2,7 +2,7 @@ package kranchie.java.woerter;
 
 import java.security.SecureRandom;
 
-public class Passwort extends Wort {
+public class Password extends Word {
     private SecureRandom secrnd = new SecureRandom();
 
     // Erstellt ein zufälliges Passwort der gewünschten Länge.
@@ -16,7 +16,7 @@ public class Passwort extends Wort {
 	    rnd_password = buchstabe + rnd_password;
 	}
 	this.eingeben(rnd_password);
-	Passwort.setClipboard(this.auslesen());
+	Password.setClipboard(this.auslesen());
 	return this.auslesen();
     }
 }

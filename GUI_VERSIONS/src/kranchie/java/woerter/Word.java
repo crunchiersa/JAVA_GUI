@@ -5,26 +5,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import javax.swing.JOptionPane;
 
-public class Wort {
+public abstract class Word {
     /* Attributes */
     private String inhalt;
     private int	   laenge;
-
-    /* Constructors */
-    public Wort(String inhalt, int laenge) {
-	this.inhalt = inhalt;
-	this.laenge = laenge;
-    }
-
-    public Wort(int laenge) {
-	this.inhalt = "";
-	this.laenge = laenge;
-    }
-
-    public Wort() {
-	this.inhalt = "";
-	this.laenge = 0;
-    }
 
     /* Methoden */
     // Möglichkeit ein Passwort einzugeben.

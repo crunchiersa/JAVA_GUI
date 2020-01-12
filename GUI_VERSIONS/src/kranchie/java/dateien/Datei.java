@@ -29,23 +29,41 @@ public class Datei {
     private boolean	      validfullname = false;
     private boolean	      validfullpath = false;
 
+    /*-------------*/
     /* Constructor */
+    /*-------------*/
+
     public Datei() {
-	this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"));
+	boolean exist;
+	int	dialogButton = JOptionPane.YES_OPTION;
+	int	dialogResult = JOptionPane.showConfirmDialog(null,
+		"Sollte die Datei bereits existieren?", "Datei existiert?", dialogButton);
+	if (dialogResult == dialogButton) {
+	    exist = true;
+	} else {
+	    exist = false;
+	}
+	this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"), exist);
 	this.setSpeicherPfad(JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:"));
 	this.nooverwrite = true;
     }
 
-    public Datei(String dateiName, String speicherPfad) {
+    public Datei(boolean exist) {
+	this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"), exist);
+	this.setSpeicherPfad(JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:"));
+	this.nooverwrite = true;
+    }
+    
+    public Datei(String dateiName, String speicherPfad, boolean exist) {
 	super();
-	this.setDateiName(dateiName);
+	this.setDateiName(dateiName, exist);
 	this.setSpeicherPfad(speicherPfad);
 	this.nooverwrite = true;
     }
 
-    public Datei(String dateiName, String speicherPfad, boolean nooverwrite) {
+    public Datei(String dateiName, String speicherPfad, boolean nooverwrite, boolean exist) {
 	super();
-	this.setDateiName(dateiName);
+	this.setDateiName(dateiName, exist);
 	this.setSpeicherPfad(speicherPfad);
 	this.nooverwrite = nooverwrite;
     }
@@ -53,6 +71,15 @@ public class Datei {
     /*-------------------*/
     /* Getters + Setters */
     /*-------------------*/
+
+    public String getZeilenInhalt(int zeile) {
+	this.zeilenInhalt = inhaltLesen.get(zeile - 1);
+	return this.zeilenInhalt;
+    }
+
+    public ArrayList<String> getInhaltLesen() {
+	return inhaltLesen;
+    }
 
     public String getDateiName() {
 	return this.dateiName;
@@ -62,29 +89,33 @@ public class Datei {
 	return this.dateiEndung;
     }
 
+    public String getSpeicherPfad() {
+	return speicherPfad;
+    }
+
     public String getabsolutePath() {
 	return this.absolutePath;
     }
 
-    private void setDateiName(String dateiName) {
+    public void setDateiName(String dateiName, boolean exist) {
 	if (this.validending || (this.validending && this.validpath)) {
 	    this.dateiName     = dateiName + "." + this.dateiEndung;
 	    this.validname     = true;
 	    this.validfullname = true;
-	    this.setabsolutePath();
+	    this.setabsolutePath(exist);
 	} else {
 	    this.dateiName     = dateiName;
 	    this.validname     = true;
 	    this.validfullname = false;
 	}
-	
+
     }
 
-    public void setdateiEndung(String endung) {
+    public void setdateiEndung(String endung, boolean exist) {
 	this.dateiEndung = endung;
 	this.validending = true;
 	if (validname || (validname && validpath)) {
-	    this.setDateiName(this.dateiName);
+	    this.setDateiName(this.dateiName, exist);
 	} else if (validfullname) {
 	    String error = "Es gibt bereits eine Dateiendung (" + this.dateiEndung
 		    + ") es kann daher keine Dateiendung gesetzt werden.";
@@ -122,7 +153,7 @@ public class Datei {
 	}
     }
 
-    private boolean setabsolutePath() {
+    private boolean setabsolutePath(boolean shouldexist) {
 	String error  = "Es wurden die folgenden Variablen noch nicht befüllt: ";
 	String abpath = this.speicherPfad + File.separator + this.dateiName;
 	try {
@@ -135,16 +166,18 @@ public class Datei {
 			throw new CustomUnchecked("1");
 		    } else if (!validpath) {
 			throw new CustomUnchecked("2");
-		    } else if (fileexist) {
+		    } else if (fileexist && !shouldexist) {
 			this.setnooverwrite(this.priv_meth_ueberschreib());
 			if (nooverwrite) {
 			    throw new CustomUnchecked("3");
 			} else {
-			    this.absolutePath = abpath;
+			    this.absolutePath  = abpath;
+			    this.validfullpath = true;
 			    return true;
 			}
 		    } else {
-			this.absolutePath = abpath;
+			this.absolutePath  = abpath;
+			this.validfullpath = true;
 			return true;
 		    }
 		} catch (CustomUnchecked e) {
@@ -181,22 +214,9 @@ public class Datei {
 	    return false;
 	}
     }
-
+    
     private void setnooverwrite(boolean a) {
 	this.nooverwrite = a;
-    }
-
-    public String getSpeicherPfad() {
-	return speicherPfad;
-    }
-
-    public String getZeilenInhalt(int zeile) {
-	this.zeilenInhalt = inhaltLesen.get(zeile - 1);
-	return this.zeilenInhalt;
-    }
-
-    public ArrayList<String> getInhaltLesen() {
-	return inhaltLesen;
     }
 
     public void setInhaltSchreiben(ArrayList<String> inhaltSchreiben) {
@@ -227,25 +247,30 @@ public class Datei {
      */
 
     public ArrayList<String> pub_einlesen(int zeile) throws IOException {
-	try {
-	    Scanner s = new Scanner(new File(this.absolutePath));
-	    this.inhaltLesen = new ArrayList<String>();
-	    if (zeile > 0) {
-		for (int i = 0; i < zeile; i++) {
-		    this.inhaltLesen.add(s.nextLine());
+	if (validfullpath) {
+	    try {
+		Scanner s = new Scanner(new File(this.absolutePath));
+		this.inhaltLesen = new ArrayList<String>();
+		if (zeile > 0) {
+		    for (int i = 0; i < zeile; i++) {
+			this.inhaltLesen.add(s.nextLine());
+		    }
+		} else {
+		    while (s.hasNextLine()) {
+			this.inhaltLesen.add(s.nextLine());
+		    }
 		}
-	    } else {
-		while (s.hasNextLine()) {
-		    this.inhaltLesen.add(s.nextLine());
-		}
+		s.close();
+		return this.inhaltLesen;
+	    } catch (IndexOutOfBoundsException e) {
+		ArrayList<String> error	    = new ArrayList<String>();
+		String		  errormesg = e.getClass() + " " + e.getMessage();
+		error.add(errormesg);
+		return error;
 	    }
-	    s.close();
-	    return this.inhaltLesen;
-	} catch (IndexOutOfBoundsException e) {
-	    ArrayList<String> error	= new ArrayList<String>();
-	    String	      errormesg	= e.getClass() + " " + e.getMessage();
-	    error.add(errormesg);
-	    return error;
+	} else {
+	    String error = "Es wurde noch keine zulesende Datei festgelegt. (validfullpath missing!)";
+	    throw new CustomUnchecked(error);
 	}
     }// End of Method
 
@@ -335,7 +360,7 @@ public class Datei {
     }
 
     public boolean checkname_fileexist(String path, String filename) {
-	File	datei	= new File(path + File.pathSeparator + filename);
+	File	datei	= new File(path + File.separator + filename);
 	boolean	fexists	= datei.exists();
 	if (fexists) {
 	    return true;
@@ -344,7 +369,7 @@ public class Datei {
 	}
     }
 
-    private boolean checkname_validpath(String path) {
+    public boolean checkname_validpath(String path) {
 	File	datei	= new File(path);
 	boolean	fexists	= datei.exists();
 	if (fexists) {
@@ -354,7 +379,7 @@ public class Datei {
 	}
     }
 
-    private boolean checkname_canwrite(String path) {
+    public boolean checkname_canwrite(String path) {
 	File	datei  = new File(path);
 	boolean	fwrite = datei.canWrite();
 	if (fwrite) {
@@ -364,7 +389,7 @@ public class Datei {
 	}
     }
 
-    private boolean checkname_canwrite(String path, String filename) {
+    public boolean checkname_canwrite(String path, String filename) {
 	File	datei  = new File(path + File.pathSeparator + filename);
 	boolean	fwrite = datei.canWrite();
 	if (fwrite) {
@@ -386,7 +411,7 @@ public class Datei {
 		JOptionPane.showMessageDialog(null, "Das Textfeld war leer!");
 	    }
 	} while (antwort.length() == 0);
-	this.setDateiName(antwort);
+	this.setDateiName(antwort, false);
 	namechanged = true;
 	return namechanged;
     }
