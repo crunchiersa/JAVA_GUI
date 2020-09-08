@@ -16,18 +16,9 @@ public class Datei {
     /*-----------*/
     /* Attribute */
     /*-----------*/
-    private String	      dateiName;
-    private String	      speicherPfad;
-    private String	      zeilenInhalt;
+    private String	      dateiName, speicherPfad, zeilenInhalt, dateiEndung, absolutePath;
     private ArrayList<String> inhaltLesen   = new ArrayList<String>(), inhaltSchreiben = new ArrayList<String>();
-    private String	      dateiEndung;
-    private String	      absolutePath;
-    private boolean	      nooverwrite;
-    private boolean	      validpath	    = false;
-    private boolean	      validname	    = false;
-    private boolean	      validending   = false;
-    private boolean	      validfullname = false;
-    private boolean	      validfullpath = false;
+    private boolean	      nooverwrite, validpath = false, validname = false, validending = false, validfullname = false, validfullpath = false;
 
     /*-------------*/
     /* Constructor */

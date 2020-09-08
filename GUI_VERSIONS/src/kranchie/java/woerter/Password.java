@@ -4,8 +4,15 @@ import java.security.SecureRandom;
 
 public class Password extends Word {
     private SecureRandom secrnd = new SecureRandom();
-
-    // Erstellt ein zufälliges Passwort der gewünschten Länge.
+    
+    public Password () {
+    	super();
+    }
+    
+    public Password (String wort, String sprache) {
+    	super(wort, sprache);
+    }
+	// Erstellt ein zufälliges Passwort der gewünschten Länge.
     public String genpasswd(int laenge) {
 	final String alphabet	  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-./&%$§";
 	char	     buchstabe;
@@ -16,7 +23,7 @@ public class Password extends Word {
 	    rnd_password = buchstabe + rnd_password;
 	}
 	this.eingeben(rnd_password);
-	Password.setClipboard(this.auslesen());
-	return this.auslesen();
+	Password.setClipboard(this.inhaltauslesen());
+	return this.inhaltauslesen();
     }
 }
