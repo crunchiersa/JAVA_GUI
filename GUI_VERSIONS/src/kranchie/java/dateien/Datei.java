@@ -63,7 +63,7 @@ public class Datei {
     /* Getters + Setters */
     /*-------------------*/
 
-    public String getZeilenInhalt(int zeile) {
+ 	public String getZeilenInhalt(int zeile) {
 	this.zeilenInhalt = inhaltLesen.get(zeile - 1);
 	return this.zeilenInhalt;
     }

@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>GUI_VERSIONS</name>
-			<type>2</type>
-			<location>D:/kranchieowncloud/Programmieren/GUI_VERSIONS</location>
-		</link>
-	</linkedResources>
 </projectDescription>

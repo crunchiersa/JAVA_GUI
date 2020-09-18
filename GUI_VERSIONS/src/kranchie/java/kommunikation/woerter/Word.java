@@ -1,4 +1,4 @@
-package kranchie.java.woerter;
+package kranchie.java.kommunikation.woerter;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -14,9 +14,31 @@ public abstract class Word {
     
     /*Constructor*/
     public Word() {
-    	this.inhalt = "";
+		this.inhalt = "";
+		this.laenge = 0;
+		this.sprache = "unbekannt";
+    }
+
+    public Word(boolean initialise) {
+    	if (initialise) {
+    	String wort = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein: ");
+    	if (wort.length() > 0) {
+    		this.inhalt = wort;
+    	} else {
+    		throw new CustomUnchecked("Es wurde kein Wort eingegeben");
+    	}
+    	String sprache = JOptionPane.showInputDialog("Bitte geben Sie die Sprache des Wortes ein: ");
+    	if (sprache.length() > 0) {
+    		this.sprache = sprache;
+    	} else {
+    		throw new CustomUnchecked("Es wurde keine Sprache eingegeben");
+    	}
     	this.deflaenge();
-    	this.sprache = "";
+    	} else {
+    		this.inhalt = "";
+    		this.laenge = 0;
+    		this.sprache = "unbekannt";
+    	}
     }
     
     public Word(String inhalt) {
@@ -55,7 +77,7 @@ public abstract class Word {
     
     /* Methoden */
     // Möglichkeit ein Wort einzugeben.
-    public void eingeben() {
+    public void inhalteingeben() {
 	String eingabe;
 	eingabe = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein:");
 		if (eingabe.length() > 0) {
@@ -63,14 +85,18 @@ public abstract class Word {
 		    this.deflaenge();
 		} else {
 		    JOptionPane.showMessageDialog(null, "Das Eingabefeld beinhaltet keinen Text.");
-		    this.eingeben();
+		    this.inhalteingeben();
 		}
     }
 
     // Overloaded eingeben() mit der Möglichkeit das Wort bereits mitzugeben.
-    public void eingeben(String eingabe) {
+    public void inhalteingeben(String eingabe) {
 	this.inhalt = eingabe;
-	deflaenge();
+	this.deflaenge();
+    }
+    
+    public void spracheeingeben(String sprache) {
+	this.sprache = sprache;
     }
 
     // Auslesen des Wortes.

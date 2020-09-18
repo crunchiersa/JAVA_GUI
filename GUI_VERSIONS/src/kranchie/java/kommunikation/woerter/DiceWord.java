@@ -1,4 +1,4 @@
-package kranchie.java.woerter;
+package kranchie.java.kommunikation.woerter;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -6,8 +6,26 @@ import javax.swing.JOptionPane;
 
 public abstract class DiceWord extends Word {
     
+    private String	 queryresult;
+    private String	 connectionerror;
     private int		 iteration;
     private SecureRandom secrnd	    = new SecureRandom();
+    
+    public void setQueryresult(String result) {
+    	this.queryresult = result; 
+    }
+    
+    public String getQueryresult() {
+    	return this.queryresult;
+    }
+    
+    public void setConnectionerror(String error) {
+    	this.connectionerror = error; 
+    }
+    
+    public String getConnectionerror() {
+    	return this.connectionerror;
+    }
     
     // Erstellt eine Zahl für die Datenbankabfrage für das DiceWord.
     private String diceWordNumber() {
@@ -41,7 +59,7 @@ public abstract class DiceWord extends Word {
 		    "Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?", JOptionPane.DEFAULT_OPTION,
 		    JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
 	    if (response == 1) {
-		int answer = DiceWord_mysql.getInput(2);
+		int answer = DiceWord.getInput(2);
 		anzahlwoerter = answer;
 	    }
 	}
@@ -77,19 +95,18 @@ public abstract class DiceWord extends Word {
 		}
 		b++;
 		password = output;
-		this.eingeben(password);
+		this.inhalteingeben(password);
 	    }
 	    while (b <= anzahlwoerter)
 		;
 	} else {
 	    JOptionPane.showMessageDialog(null, "Die Sprache " + sprache + " ist nicht verfügbar.");
 	}
-	DiceWord_mysql.setClipboard(this.auslesen());
-	return this.auslesen();
+	DiceWord.setClipboard(this.inhaltauslesen());
+	return this.inhaltauslesen();
     }
     
-    // Overloaded Method possibility to choose language and number of words to
-    // use.
+    // Overloaded Method possibility to choose language 
     public String genDWpasswd(int anzahl) throws IOException {
 	String sprache;
 	if (anzahl >= 10) {
@@ -98,11 +115,11 @@ public abstract class DiceWord extends Word {
 		    "Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?", JOptionPane.DEFAULT_OPTION,
 		    JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
 	    if (response == 1) {
-		int answer = DiceWord_mysql.getInput(2);
+		int answer = DiceWord.getInput(2);
 		anzahl = answer;
 	    }
 	}
-	int    language	= DiceWord_mysql.getInput(1);
+	int    language	= DiceWord.getInput(1);
 	switch (language) {
 	    case (0):
 		sprache = "german";
@@ -125,16 +142,16 @@ public abstract class DiceWord extends Word {
 		break;
 	}
 	this.genDWpasswd(sprache, anzahl);
-	DiceWord_mysql.setClipboard(this.auslesen());
-	return this.auslesen();
+	DiceWord.setClipboard(this.inhaltauslesen());
+	return this.inhaltauslesen();
     }
     
  // Overloaded Method possibility to choose language and number of words to
     // use.
     public String genDWpasswd() throws IOException {
 	String sprache;
-	int    language	     = DiceWord_mysql.getInput(1);
-	int    anzahlwoerter = DiceWord_mysql.getInput(2);
+	int    language	     = DiceWord.getInput(1);
+	int    anzahlwoerter = DiceWord.getInput(2);
 	switch (language) {
 	    case (0):
 		sprache = "german";
@@ -157,8 +174,8 @@ public abstract class DiceWord extends Word {
 		break;
 	}
 	this.genDWpasswd(sprache, anzahlwoerter);
-	DiceWord_mysql.setClipboard(this.auslesen());
-	return this.auslesen();
+	DiceWord.setClipboard(this.inhaltauslesen());
+	return this.inhaltauslesen();
     }
     
     // Abfrage welche Art von Passwort erstellt werden soll.
@@ -186,10 +203,10 @@ public abstract class DiceWord extends Word {
 			break;
 		}
 		// eingabe is parsed to Integer. Handling if eingabe is not a number.
-		choice = DiceWord_mysql.isInteger(eingabe);
+		choice = DiceWord.isInteger(eingabe);
 		if (choice == 99) {
 		    JOptionPane.showMessageDialog(null, "Keine gültige Zahl!");
-		    DiceWord_mysql.getInput(2);
+		    DiceWord.getInput(2);
 		} else {
 		    if (auswahl == 2 && choice >= 10) {
 			String optionen[] = { "Ja", "Nein" };
@@ -198,7 +215,7 @@ public abstract class DiceWord extends Word {
 				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionen,
 				optionen[0]);
 			if (response == 1) {
-			    int answer = DiceWord_mysql.getInput(2);
+			    int answer = DiceWord.getInput(2);
 			    choice = answer;
 			}
 		    }
@@ -210,4 +227,6 @@ public abstract class DiceWord extends Word {
     }
     
     public abstract String retrieveDiceWordfromDatabase(String zuordnung, String column);
+    
+    public abstract String retrievefromDB(String select, String table, String column, String searchpattern);
 }

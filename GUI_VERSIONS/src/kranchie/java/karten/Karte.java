@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 import kranchie.java.customExceptions.CustomUnchecked;
 
-public class Karte {
+public abstract class Karte {
 
     // Attribute
     private String	      kartenNummer;

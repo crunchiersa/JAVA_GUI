@@ -25,12 +25,12 @@ public class HCMDatei extends Datei {
 	super();
     }
 
-    public HCMDatei(String dateiName, String speicherPfad) {
-	super(dateiName, speicherPfad);
+    public HCMDatei(String dateiName, String speicherPfad, boolean exist) {
+	super(dateiName, speicherPfad, exist);
     }
     
-    public HCMDatei(String dateiName, String speicherPfad, ArrayList<String> struktur, ArrayList<String> mesgContent) {
-	super(dateiName,speicherPfad);
+    public HCMDatei(String dateiName, String speicherPfad, ArrayList<String> struktur, ArrayList<String> mesgContent, boolean exist) {
+	super(dateiName,speicherPfad, exist);
 	this.mesgStruktur = struktur;
 	this.mesg = mesgContent;
     }

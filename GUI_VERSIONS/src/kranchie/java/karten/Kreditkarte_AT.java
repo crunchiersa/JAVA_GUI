@@ -1,5 +1,7 @@
 package kranchie.java.karten;
 
+import java.util.ArrayList;
+
 public class Kreditkarte_AT extends Karte {
 
     // Constructors
@@ -14,8 +16,7 @@ public class Kreditkarte_AT extends Karte {
 	super.setkartennrlaenge(16);
     }
 
-    // Methoden
-
+    //Public Methoden
     /**
      * Description: Prüfen ob Kreditkartennummer gültig ist. Die Methode
      * errechnet die Gültigkeit anhand folgendem Vorgehen: 1. Es wird die Summe
@@ -64,5 +65,16 @@ public class Kreditkarte_AT extends Karte {
 	    gueltigkeit = false;
 	}
 	return gueltigkeit;
+    }
+    
+    // Private Methoden
+    
+    private ArrayList<String> getCCNR(){
+    	ArrayList<String> ccnr =  new ArrayList<String>();
+    	
+    	
+    	
+    	return ccnr;
+    	
     }
 }
