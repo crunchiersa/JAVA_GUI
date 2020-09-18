@@ -1,10 +1,14 @@
 package kranchie.java.kommunikation.woerter;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
+
 import kranchie.java.customExceptions.CustomUnchecked;
 import kranchie.java.dateien.Datei;
 
@@ -12,12 +16,12 @@ public class DiceWord_DB extends DiceWord {
 
 	private String path, fullpath, dbfile, url, dbtype, ip, port, database, userName, password, drivercomp;
 	// If Timeformat on server differs from UTC timestamps will be read incorrectly!
-	private final String timezone = "?serverTimezone=UTC"; 
-															
+	private final String timezone = "?serverTimezone=UTC";
+
 	public DiceWord_DB() {
 		super();
 	}
-	
+
 	public DiceWord_DB(String dbtype) {
 		super();
 		this.dbtype = dbtype;
@@ -68,38 +72,22 @@ public class DiceWord_DB extends DiceWord {
 		return this.fullpath;
 	}
 
-	private void setfullpath(Datei file) {
-		String fehler, error;
+	private void setfullpath(Datei file) throws CustomUnchecked {
 		boolean validpath = file.checkname_validpath(file.getSpeicherPfad());
 		boolean validfile = file.checkname_fileexist(file.getSpeicherPfad(), file.getDateiName());
-		try {
-			if (validpath && validfile) {
-				this.fullpath = this.drivercomp + file.getabsolutePath();
-			} else if (!validpath) {
-				throw new CustomUnchecked("1");
-			} else if (!validfile) {
-				throw new CustomUnchecked("2");
-			} else {
-				throw new CustomUnchecked("Unerwartet");
-			}
-		} catch (CustomUnchecked e) {
-			fehler = e.getMessage();
-			switch (fehler) {
-			case "1":
-				error = "Der gelieferte Pfad " + path + " existiert nicht.";
-				break;
-			case "2":
-				error = "Die Datei " + this.dbfile + " ist unter dem Pfad " + this.path + " nicht vorhanden.";
-				break;
-			default:
-				error = "Es ist ein unerwarteter Fehler aufgetreten.";
-				break;
-			}
-			throw new IllegalArgumentException(error);
+		if (validpath && validfile) {
+			this.fullpath = this.drivercomp + file.getabsolutePath();
+		} else if (!validpath) {
+			throw new CustomUnchecked("Der gelieferte Pfad " + path + " existiert nicht.");
+		} else if (!validfile) {
+			throw new CustomUnchecked(
+					"Die Datei " + this.dbfile + " ist unter dem Pfad " + this.path + " nicht vorhanden.");
+		} else {
+			throw new CustomUnchecked("Es ist ein unerwarteter Fehler aufgetreten.");
 		}
 	}
 
-	public String getIp() {
+	public String getIp() {;
 		return this.ip;
 	}
 
@@ -113,8 +101,8 @@ public class DiceWord_DB extends DiceWord {
 	}
 
 	public void setPort(String port) {
-		this.port = port;
-		this.setUrl();
+			this.port = port;
+			this.setUrl();
 	}
 
 	private void setUrl() {
@@ -132,82 +120,68 @@ public class DiceWord_DB extends DiceWord {
 		return this.database;
 	}
 
-	
-	public void setDrivercomp(String dbtype) {
+	public void setDrivercomp(String dbtype) throws CustomUnchecked {
 		if (dbtype == "mysql") {
 			this.drivercomp = "jdbc:mysql:";
-		}else if (dbtype == "sqlite") {
-			this.drivercomp = "jdbc:sqlite:"; 
+		} else if (dbtype == "sqlite") {
+			this.drivercomp = "jdbc:sqlite:";
 		} else {
 			throw new CustomUnchecked("Der genannte Datenbanktyp ist unzulässig");
 		}
 	}
-	
+
 	public String getDrivercomp() {
 		return this.drivercomp;
 	}
-	
+
 	public void setuserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 	public void setpassword(String password) {
 		this.password = password;
 	}
-	
 
 	@Override
-	public String retrieveDiceWordfromDatabase(String zuordnung, String column) {
-		try {
-			Connection conn = null;
-			if (this.dbtype == "sqlite") {
-				conn = DriverManager.getConnection(this.fullpath);
-			} else if (this.dbtype == "mysql") {
-				conn = DriverManager.getConnection(this.url, this.userName, this.password);
-			} else {
-				this.setConnectionerror("Kein Datenbanktyp definiert!");
-				return this.getConnectionerror();
-			}
-			Statement st = conn.createStatement();
-			String query = "SELECT " + column + " FROM diceWord WHERE Wurf = " + zuordnung;
-			ResultSet res = st.executeQuery(query);
-			while (res.next()) {
-				String msg = res.getString(column);
-				this.setQueryresult("" + msg);
-			}
-			conn.close();
-		} catch (SQLException e) {
-			this.setConnectionerror(e.getMessage());
-			return this.getConnectionerror();
+	public String retrieveDiceWordfromDatabase(String zuordnung, String column) throws SQLException {
+		Connection conn = null;
+		if (this.dbtype == "sqlite") {
+			conn = DriverManager.getConnection(this.fullpath);
+		} else if (this.dbtype == "mysql") {
+			conn = DriverManager.getConnection(this.url, this.userName, this.password);
+		} else {
+			throw new SQLException("Kein Datenbanktyp definiert!");
 		}
+		Statement st = conn.createStatement();
+		String query = "SELECT " + column + " FROM diceWord WHERE Wurf = " + zuordnung;
+		ResultSet res = st.executeQuery(query);
+		while (res.next()) {
+			String msg = res.getString(column);
+			this.setQueryresult("" + msg);
+		}
+		conn.close();
 		return this.getQueryresult();
 	}
 
 	@Override
-	public String retrievefromDB(String select, String table, String column, String searchpattern) {
-		try {
-			Connection conn = null;
-			if (this.dbtype == "sqlite") {
-				conn = DriverManager.getConnection(this.fullpath);
-			} else if (this.dbtype == "mysql") {
-				conn = DriverManager.getConnection(this.url, this.userName, this.password);
-			} else {
-				this.setConnectionerror("Kein Datenbanktyp definiert!");
-				return this.getConnectionerror();
-			}
-			Statement st = conn.createStatement();
-			String query = "Select " + select + " FROM " + table + " Where " + column + " = " + searchpattern;
-			ResultSet res = st.executeQuery(query);
-			while (res.next()) {
-				String msg = res.getString(select);
-				this.setQueryresult("" + msg);
-			}
-			conn.close();
-
-		} catch (SQLException e) {
-			this.setConnectionerror(e.getMessage());
-			return this.getConnectionerror();
+	public String retrievefromDB(String select, String table, String column, String searchpattern) throws SQLException {
+		// try {
+		Connection conn = null;
+		if (this.dbtype == "sqlite") {
+			conn = DriverManager.getConnection(this.fullpath);
+		} else if (this.dbtype == "mysql") {
+			conn = DriverManager.getConnection(this.url, this.userName, this.password);
+		} else {
+			throw new SQLException("Kein Datenbanktyp definiert!");
 		}
+		Statement st = conn.createStatement();
+		String query = "Select " + select + " FROM " + table + " Where " + column + " = " + searchpattern;
+		ResultSet res = st.executeQuery(query);
+		while (res.next()) {
+			String msg = res.getString(select);
+			this.setQueryresult("" + msg);
+		}
+		conn.close();
 		return this.getQueryresult();
 	}
 
