@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
+import kranchie.java.customExceptions.CustomUnchecked;
+
 public abstract class DiceWord extends Word {
 
 	private String queryresult;
@@ -41,20 +43,15 @@ public abstract class DiceWord extends Word {
 	}
 
 	// If choice is 99 --> String cannot be parsed into Integer.
-	public static int isInteger(String eingabe) {
-		int choice;
-		try {
-			choice = Integer.parseInt(eingabe);
-		} catch (NumberFormatException nf) {
-			choice = 99;
-		}
+	public static int isInteger(String eingabe) throws NumberFormatException {
+		int choice = Integer.parseInt(eingabe);
 		return choice;
 	}
 
 	// Erstellt ein DiceWord-Passwort in der gewünschten Sprache mit der Anzahl
 	// von Wörtern.
 	// Eingabemöglichkeiten Sprache: german, english,french,spanish,eff.
-	public String genDWpasswd(String sprache, int anzahlwoerter) throws IOException, SQLException {
+	public String genDWpasswd(String sprache, int anzahlwoerter) throws CustomUnchecked, IOException, SQLException {
 		if (anzahlwoerter >= 10) {
 			String optionen[] = { "Ja", "Nein" };
 			int response = JOptionPane.showOptionDialog(null,
@@ -109,7 +106,7 @@ public abstract class DiceWord extends Word {
 	}
 
 	// Overloaded Method possibility to choose language
-	public String genDWpasswd(int anzahl) throws IOException, SQLException {
+	public String genDWpasswd(int anzahl) throws CustomUnchecked, IOException, SQLException {
 		String sprache;
 		if (anzahl >= 10) {
 			String optionen[] = { "Ja", "Nein" };
@@ -154,7 +151,7 @@ public abstract class DiceWord extends Word {
 
 	// Overloaded Method possibility to choose language and number of words to
 	// use.
-	public String genDWpasswd() throws IOException, SQLException {
+	public String genDWpasswd() throws CustomUnchecked, IOException, SQLException {
 		String sprache;
 		int language = DiceWord.getInput(1);
 		int anzahlwoerter = DiceWord.getInput(2);
@@ -209,24 +206,23 @@ public abstract class DiceWord extends Word {
 					break;
 				}
 				// eingabe is parsed to Integer. Handling if eingabe is not a number.
-				choice = DiceWord.isInteger(eingabe);
-				if (choice == 99) {
+				try {
+					choice = DiceWord.isInteger(eingabe);
+				} catch (NumberFormatException nf) {
 					JOptionPane.showMessageDialog(null, "Keine gültige Zahl!");
 					DiceWord.getInput(2);
-				} else {
-					if (auswahl == 2 && choice >= 10) {
-						String optionen[] = { "Ja", "Nein" };
-						int response = JOptionPane.showOptionDialog(null,
-								"Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?",
-								JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionen,
-								optionen[0]);
-						if (response == 1) {
-							int answer = DiceWord.getInput(2);
-							choice = answer;
-						}
-					}
-					more = false;
 				}
+				if (auswahl == 2 && choice >= 10) {
+					String optionen[] = { "Ja", "Nein" };
+					int response = JOptionPane.showOptionDialog(null,
+							"Sicher, dass das Passwort soviele Worte beinhalten soll?", "Sicher?",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, optionen, optionen[0]);
+					if (response == 1) {
+						int answer = DiceWord.getInput(2);
+						choice = answer;
+					}
+				}
+				more = false;
 			}
 		} while (more == true);
 		return choice;

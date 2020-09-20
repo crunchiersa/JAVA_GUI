@@ -1,5 +1,6 @@
 package kranchie.java.kommunikation.saetze;
 
+import kranchie.java.customExceptions.CustomUnchecked;
 import kranchie.java.kommunikation.woerter.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.List;
 public class Sentence {
 
 	private List<Word> satz = new ArrayList<Word>();
-	private Word wort = new GermanWord();
 	private String sprache;
 	
 	public void setSprache(String sprache) {
@@ -18,7 +18,7 @@ public class Sentence {
 		return this.sprache;
 	}
 	
-	public void setSatz(GermanWord wort) {
+	public void setSatz(Word wort) {
 		satz.add(wort);
 	}
 	
@@ -30,9 +30,8 @@ public class Sentence {
 		satz.add(zahl, wort);
 	}
 	
-	private String getWord(int zahl) {
-		wort =  satz.get(zahl);
-		return wort.inhaltauslesen();
+	private String getWord(int zahl) throws CustomUnchecked {
+		return satz.get(zahl).inhaltauslesen();
 	}
 	
 	private String getCompleteSentence(List<Word> sentence) {
@@ -40,7 +39,11 @@ public class Sentence {
 		String completeSentence = "";
 		for (int i=0; i<= sentence.size();i++) {
 			Word wort = sentence.get(i);
-			completeSentence = completeSentence + wort.inhaltauslesen();
+			try {
+				completeSentence = completeSentence + wort.inhaltauslesen();
+			} catch (CustomUnchecked e) {
+				continue;
+			}
 		}
 		return completeSentence;
 	}
@@ -61,7 +64,7 @@ public class Sentence {
 		this.setWord(wort, position);
 	}
 	
-	public String getPublicWord(int position) {
+	public String getPublicWord(int position) throws CustomUnchecked {
 		return this.getWord(position);
 	}
 }

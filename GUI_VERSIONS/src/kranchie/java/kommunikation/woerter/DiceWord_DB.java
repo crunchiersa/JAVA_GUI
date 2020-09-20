@@ -1,14 +1,10 @@
 package kranchie.java.kommunikation.woerter;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
-
 import kranchie.java.customExceptions.CustomUnchecked;
 import kranchie.java.dateien.Datei;
 
@@ -51,7 +47,7 @@ public class DiceWord_DB extends DiceWord {
 		this.setUrl();
 	}
 
-	public DiceWord_DB(String path, String filename, String dateiendung) {
+	public DiceWord_DB(String path, String filename, String dateiendung) throws CustomUnchecked {
 		super();
 		this.dbtype = "sqlite";
 		this.drivercomp = "jdbc:sqlite:";
@@ -60,7 +56,7 @@ public class DiceWord_DB extends DiceWord {
 		this.setfullpath(file);
 	}
 
-	public DiceWord_DB(Datei datei) {
+	public DiceWord_DB(Datei datei) throws CustomUnchecked{
 		super();
 		this.dbtype = "sqlite";
 		this.drivercomp = "jdbc:sqlite:";
@@ -78,16 +74,16 @@ public class DiceWord_DB extends DiceWord {
 		if (validpath && validfile) {
 			this.fullpath = this.drivercomp + file.getabsolutePath();
 		} else if (!validpath) {
-			throw new CustomUnchecked("Der gelieferte Pfad " + path + " existiert nicht.");
+			throw new CustomUnchecked("woerter", 0);
 		} else if (!validfile) {
-			throw new CustomUnchecked(
-					"Die Datei " + this.dbfile + " ist unter dem Pfad " + this.path + " nicht vorhanden.");
+			throw new CustomUnchecked("woerter", 1);
 		} else {
-			throw new CustomUnchecked("Es ist ein unerwarteter Fehler aufgetreten.");
+			throw new CustomUnchecked("woerter", 2);
 		}
 	}
 
-	public String getIp() {;
+	public String getIp() {
+		;
 		return this.ip;
 	}
 
@@ -101,8 +97,8 @@ public class DiceWord_DB extends DiceWord {
 	}
 
 	public void setPort(String port) {
-			this.port = port;
-			this.setUrl();
+		this.port = port;
+		this.setUrl();
 	}
 
 	private void setUrl() {
@@ -126,7 +122,7 @@ public class DiceWord_DB extends DiceWord {
 		} else if (dbtype == "sqlite") {
 			this.drivercomp = "jdbc:sqlite:";
 		} else {
-			throw new CustomUnchecked("Der genannte Datenbanktyp ist unzulässig");
+    		throw new CustomUnchecked("woerter", 4);
 		}
 	}
 

@@ -11,6 +11,7 @@ public abstract class Word {
     /* Attributes */
     private String inhalt, sprache;
     private int	   laenge;
+    private CustomUnchecked fehler = new CustomUnchecked("woerter");
     
     /*Constructor*/
     public Word() {
@@ -19,19 +20,21 @@ public abstract class Word {
 		this.sprache = "unbekannt";
     }
 
-    public Word(boolean initialise) {
+    public Word(boolean initialise) throws CustomUnchecked {
+
     	if (initialise) {
     	String wort = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein: ");
     	if (wort.length() > 0) {
     		this.inhalt = wort;
     	} else {
-    		throw new CustomUnchecked("Es wurde kein Wort eingegeben");
+    		fehler.setFehler(10);
+    		throw fehler;
     	}
     	String sprache = JOptionPane.showInputDialog("Bitte geben Sie die Sprache des Wortes ein: ");
     	if (sprache.length() > 0) {
     		this.sprache = sprache;
     	} else {
-    		throw new CustomUnchecked("Es wurde keine Sprache eingegeben");
+    		throw new CustomUnchecked("woerter", 6);
     	}
     	this.deflaenge();
     	} else {
@@ -53,10 +56,11 @@ public abstract class Word {
     	this.sprache = sprache;
     }
     
-    public Word(String inhalt, int laenge) {
+    public Word(String inhalt, int laenge) throws CustomUnchecked {
     	if (inhalt.length() != laenge) {
-    		String error = "Die tatsächliche Länge " + inhalt.length() + " stimmt nicht mit der angegebenen Länge " + laenge + " überein!";
-    		throw new CustomUnchecked(error);
+    		//throw new CustomUnchecked("woerter", 7);
+    		fehler.setFehler(7);
+    		throw fehler;
     	} else {
     		this.inhalt = inhalt;
     		this.laenge = laenge;
@@ -64,10 +68,11 @@ public abstract class Word {
     	}
     }
 
-    public Word(String inhalt, int laenge, String sprache) {
+    public Word(String inhalt, int laenge, String sprache) throws CustomUnchecked {
     	if (inhalt.length() != laenge) {
-    		String error = "Die tatsächliche Länge " + inhalt.length() + " stimmt nicht mit der angegebenen Länge " + laenge + " überein!";
-    		throw new CustomUnchecked(error);
+    		//throw new CustomUnchecked("woerter", 7);
+    		fehler.setFehler(7);
+    		throw fehler;
     	} else {
     		this.inhalt = inhalt;
     		this.laenge = laenge;
@@ -100,23 +105,24 @@ public abstract class Word {
     }
 
     // Auslesen des Wortes.
-    public String inhaltauslesen() {
+    public String inhaltauslesen() throws CustomUnchecked {
     	if (this.inhalt.length() > 0) {
     		String ausgabe = this.inhalt;
     		return ausgabe;
     	} else {
-    		String error = "Es konnte kein Inhalt gefunden werden.";
-    		throw new CustomUnchecked(error);
+    		fehler.setFehler(8);
+    		throw fehler;
     	}
     }
     
-    public String spracheauslesen() {
+    public String spracheauslesen() throws CustomUnchecked {
     	if (this.sprache.length() > 0) {
     		String ausgabe = this.sprache;
     		return ausgabe;
     	} else {
-    		String error = "Es wurde keine Sprache hinterlegt.";
-    		throw new CustomUnchecked(error);
+    		//throw new CustomUnchecked("woerter", 9);
+    		fehler.setFehler(9);
+    		throw fehler;
     	}
     }
     
@@ -127,12 +133,13 @@ public abstract class Word {
     }
 
     // Laenge des Wortes auslesen.
-    public int laengeauslesen() {
+    public int laengeauslesen() throws CustomUnchecked {
     	if (this.laenge > 0) {
     		return this.laenge;
     	} else {
-    		String error = "Es konnte kein Inhalt gefunden werden.";
-    		throw new CustomUnchecked(error);
+    		//throw new CustomUnchecked("woerter", 8);
+    		fehler.setFehler(8);
+    		throw fehler;
     	}
 	
     }

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import kranchie.java.customExceptions.CustomUnchecked;
+
 @SuppressWarnings("unused")
 public class HCMDatei extends Datei {
     
@@ -21,15 +23,15 @@ public class HCMDatei extends Datei {
     private ArrayList<String> mesg	   = new ArrayList<String>();
     private String	      nachricht;
 
-    public HCMDatei() {
+    public HCMDatei() throws CustomUnchecked {
 	super();
     }
 
-    public HCMDatei(String dateiName, String speicherPfad, boolean exist) {
+    public HCMDatei(String dateiName, String speicherPfad, boolean exist) throws CustomUnchecked {
 	super(dateiName, speicherPfad, exist);
     }
     
-    public HCMDatei(String dateiName, String speicherPfad, ArrayList<String> struktur, ArrayList<String> mesgContent, boolean exist) {
+    public HCMDatei(String dateiName, String speicherPfad, ArrayList<String> struktur, ArrayList<String> mesgContent, boolean exist) throws CustomUnchecked {
 	super(dateiName,speicherPfad, exist);
 	this.mesgStruktur = struktur;
 	this.mesg = mesgContent;

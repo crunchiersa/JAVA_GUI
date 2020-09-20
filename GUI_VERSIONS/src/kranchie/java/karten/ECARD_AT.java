@@ -1,6 +1,11 @@
 package kranchie.java.karten;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JOptionPane;
+
+import kranchie.java.customExceptions.CustomUnchecked;
 
 public class ECARD_AT extends Karte {
 
@@ -37,25 +42,31 @@ public class ECARD_AT extends Karte {
 		int repeat = 0;
 		int summe = 0;
 		int xe = 0;
-		boolean nrinordnung = this.checkLaenge(this.getkartennrlaenge(), this.getKartenArt());
+		boolean nrinordnung = this.checkLaenge(this.getkartennrlaenge());
+
 		if (nrinordnung == true) {
-			for (int i = 0; i < 10; i++) {
-				int wert = super.setwertcc(this.getKartenNummer().charAt(i));
-				if (i < 3) {
-					wert *= this.multiplikator.get(i);
-					summe += wert;
-				} else if (i > 3) {
-					wert *= this.multiplikator.get(i - 1);
-					summe += wert;
-				} else if (i == 3) {
-					xe = wert;
+			try {
+				for (int i = 0; i < 10; i++) {
+					int wert = super.setwertcc(this.getKartenNummer().charAt(i));
+					if (i < 3) {
+						wert *= this.multiplikator.get(i);
+						summe += wert;
+					} else if (i > 3) {
+						wert *= this.multiplikator.get(i - 1);
+						summe += wert;
+					} else if (i == 3) {
+						xe = wert;
+					}
+					repeat = repeat + 1;
 				}
-				repeat = repeat + 1;
-			}
-			summe %= 11;
-			if (xe == summe) {
-				gueltigkeit = true;
-			} else {
+				summe %= 11;
+				if (xe == summe) {
+					gueltigkeit = true;
+				} else {
+					gueltigkeit = false;
+				}
+			} catch (CustomUnchecked e) {
+				JOptionPane.showMessageDialog(null, e.getFehler());
 				gueltigkeit = false;
 			}
 		} else {
