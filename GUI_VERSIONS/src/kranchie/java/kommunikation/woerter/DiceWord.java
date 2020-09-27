@@ -9,12 +9,16 @@ import javax.swing.JOptionPane;
 import kranchie.java.customExceptions.CustomUnchecked;
 
 public abstract class DiceWord extends Word {
-
+	
 	private String queryresult;
 	private String connectionerror;
 	private int iteration;
 	private SecureRandom secrnd = new SecureRandom();
 
+	public DiceWord() throws CustomUnchecked {
+		super();
+	}
+	
 	public void setQueryresult(String result) {
 		this.queryresult = result;
 	}

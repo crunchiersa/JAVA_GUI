@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Sentence {
 
-	private List<Word> satz = new ArrayList<Word>();
+	private ArrayList<Word> satz = new ArrayList<Word>();
 	private String sprache;
 	
 	public void setSprache(String sprache) {
@@ -40,7 +40,7 @@ public class Sentence {
 		for (int i=0; i<= sentence.size();i++) {
 			Word wort = sentence.get(i);
 			try {
-				completeSentence = completeSentence + wort.inhaltauslesen();
+				completeSentence += " " + wort.inhaltauslesen();
 			} catch (CustomUnchecked e) {
 				continue;
 			}
@@ -56,7 +56,7 @@ public class Sentence {
 		return this.getSatz();
 	}
 	
-	public void setCompleteSentence(List<Word> sentence) {
+	public void setCompleteSentence(ArrayList<Word> sentence) {
 		this.satz = sentence;
 	}
 	

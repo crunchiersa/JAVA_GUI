@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import kranchie.java.customExceptions.CustomUnchecked;
 
@@ -36,14 +38,14 @@ public class Datei {
 		} else {
 			exist = false;
 		}
-		this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"), exist);
-		this.setSpeicherPfad(JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:"));
+		this.setSpeicherPfad(this.getPath());
+		this.setDateiName(this.getFile(), exist);
 		this.nooverwrite = true;
 	}
 
 	public Datei(boolean exist) throws CustomUnchecked {
-		this.setDateiName(JOptionPane.showInputDialog(null, "Bitte geben Sie den Dateinamen ein:"), exist);
-		this.setSpeicherPfad(JOptionPane.showInputDialog(null, "Bitte geben Sie den Speicherpfad an:"));
+		this.setSpeicherPfad(this.getPath());
+		this.setDateiName(this.getFile(), exist);
 		this.nooverwrite = true;
 	}
 
@@ -186,6 +188,40 @@ public class Datei {
 		this.inhaltSchreiben = inhaltSchreiben;
 	}
 
+	private String getPath() throws CustomUnchecked {
+		String path = null;
+		CustomUnchecked cu = new CustomUnchecked("dateien");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int status = fc.showOpenDialog(null);
+		if (status == JFileChooser.APPROVE_OPTION) {
+			File selFile = fc.getSelectedFile();
+			path = selFile.getPath();
+		} else {
+			cu.setFehler(7);
+			throw cu;
+		}
+		this.setSpeicherPfad(path);
+		return path;
+	}
+
+	private String getFile() throws CustomUnchecked {
+		String file = null;
+		CustomUnchecked cu = new CustomUnchecked("dateien");
+			JFileChooser fc = new JFileChooser(this.getSpeicherPfad());
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int status = fc.showOpenDialog(null);
+		if (status == JFileChooser.APPROVE_OPTION) {
+			File selFile = fc.getSelectedFile();
+			file = selFile.getName();
+		} else {
+			cu.setFehler(8);
+			throw cu;
+		}
+		this.setDateiName(file, true);
+		return file;
+	}
+
 	@SuppressWarnings("unused")
 	private static void clearClipboard() {
 		StringSelection stringSelection = new StringSelection("");
@@ -208,7 +244,6 @@ public class Datei {
 	 * Methode zum Einlesen der Datei. Falls die ganze Datei eingelesen werden soll
 	 * muss die Zeilenanzahl 0 sein.
 	 */
-
 	public ArrayList<String> pub_einlesen(int zeile) throws IOException, CustomUnchecked, IndexOutOfBoundsException {
 		if (validfullpath) {
 			Scanner s = new Scanner(new File(this.absolutePath));

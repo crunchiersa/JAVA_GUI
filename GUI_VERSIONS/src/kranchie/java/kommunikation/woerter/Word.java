@@ -8,152 +8,156 @@ import javax.swing.JOptionPane;
 import kranchie.java.customExceptions.CustomUnchecked;
 
 public abstract class Word {
-    /* Attributes */
-    private String inhalt, sprache;
-    private int	   laenge;
-    private CustomUnchecked fehler = new CustomUnchecked("woerter");
-    
-    /*Constructor*/
-    public Word() {
-		this.inhalt = "";
+	/* Attributes */
+	private String inhalt, sprache;
+	private int laenge;
+	CustomUnchecked fehler = new CustomUnchecked("woerter");
+
+	/* Constructor */
+	public Word() throws CustomUnchecked {
+		this.inhalteingeben("");
 		this.laenge = 0;
 		this.sprache = "unbekannt";
-    }
+	}
 
-    public Word(boolean initialise) throws CustomUnchecked {
-
-    	if (initialise) {
-    	String wort = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein: ");
-    	if (wort.length() > 0) {
-    		this.inhalt = wort;
-    	} else {
-    		fehler.setFehler(10);
-    		throw fehler;
-    	}
-    	String sprache = JOptionPane.showInputDialog("Bitte geben Sie die Sprache des Wortes ein: ");
-    	if (sprache.length() > 0) {
-    		this.sprache = sprache;
-    	} else {
-    		throw new CustomUnchecked("woerter", 6);
-    	}
-    	this.deflaenge();
-    	} else {
-    		this.inhalt = "";
-    		this.laenge = 0;
-    		this.sprache = "unbekannt";
-    	}
-    }
-    
-    public Word(String inhalt) {
-    	this.inhalt = inhalt;
-    	this.deflaenge();
-    	this.sprache = "unbekannt";
-    }
-    
-    public Word(String inhalt, String sprache) {
-    	this.inhalt = inhalt;
-    	this.deflaenge();
-    	this.sprache = sprache;
-    }
-    
-    public Word(String inhalt, int laenge) throws CustomUnchecked {
-    	if (inhalt.length() != laenge) {
-    		//throw new CustomUnchecked("woerter", 7);
-    		fehler.setFehler(7);
-    		throw fehler;
-    	} else {
-    		this.inhalt = inhalt;
-    		this.laenge = laenge;
-    		this.sprache = "unbekannt";
-    	}
-    }
-
-    public Word(String inhalt, int laenge, String sprache) throws CustomUnchecked {
-    	if (inhalt.length() != laenge) {
-    		//throw new CustomUnchecked("woerter", 7);
-    		fehler.setFehler(7);
-    		throw fehler;
-    	} else {
-    		this.inhalt = inhalt;
-    		this.laenge = laenge;
-    		this.sprache = sprache;
-    	}
-    }
-    
-    /* Methoden */
-    // Möglichkeit ein Wort einzugeben.
-    public void inhalteingeben() {
-	String eingabe;
-	eingabe = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein:");
-		if (eingabe.length() > 0) {
-		    this.inhalt = eingabe;
-		    this.deflaenge();
+	public Word(boolean initialise) throws CustomUnchecked {
+		if (initialise) {
+			this.inhalteingeben();
+			this.spracheeingeben();
+			this.deflaenge();
 		} else {
-		    JOptionPane.showMessageDialog(null, "Das Eingabefeld beinhaltet keinen Text.");
-		    this.inhalteingeben();
+			this.inhalteingeben("");
+			this.spracheeingeben("unbekannt");
+			this.laenge = 0;
 		}
-    }
+	}
 
-    // Overloaded eingeben() mit der Möglichkeit das Wort bereits mitzugeben.
-    public void inhalteingeben(String eingabe) {
-	this.inhalt = eingabe;
-	this.deflaenge();
-    }
-    
-    public void spracheeingeben(String sprache) {
-	this.sprache = sprache;
-    }
+	public Word(String inhalt) throws CustomUnchecked {
+		this.inhalt = inhalt;
+		this.deflaenge();
+		this.sprache = "unbekannt";
+	}
 
-    // Auslesen des Wortes.
-    public String inhaltauslesen() throws CustomUnchecked {
-    	if (this.inhalt.length() > 0) {
-    		String ausgabe = this.inhalt;
-    		return ausgabe;
-    	} else {
-    		fehler.setFehler(8);
-    		throw fehler;
-    	}
-    }
-    
-    public String spracheauslesen() throws CustomUnchecked {
-    	if (this.sprache.length() > 0) {
-    		String ausgabe = this.sprache;
-    		return ausgabe;
-    	} else {
-    		//throw new CustomUnchecked("woerter", 9);
-    		fehler.setFehler(9);
-    		throw fehler;
-    	}
-    }
-    
+	public Word(String inhalt, String sprache) throws CustomUnchecked {
+		this.inhalteingeben(inhalt);
+		this.spracheeingeben(sprache);
+		this.deflaenge();
+	}
 
-    // Laenge des Wortes bestimmen.
-    private void deflaenge() {
-	this.laenge = this.inhalt.length();
-    }
+	public Word(String inhalt, int laenge) throws CustomUnchecked {
+		if (inhalt.length() != laenge) {
+			fehler.setFehler(7);
+			throw fehler;
+		} else {
+			this.inhalt = inhalt;
+			this.laenge = laenge;
+			this.sprache = "unbekannt";
+		}
+	}
 
-    // Laenge des Wortes auslesen.
-    public int laengeauslesen() throws CustomUnchecked {
-    	if (this.laenge > 0) {
-    		return this.laenge;
-    	} else {
-    		//throw new CustomUnchecked("woerter", 8);
-    		fehler.setFehler(8);
-    		throw fehler;
-    	}
-	
-    }
+	public Word(String inhalt, int laenge, String sprache) throws CustomUnchecked {
+		if (inhalt.length() != laenge) {
+			fehler.setFehler(7);
+			throw fehler;
+		} else {
+			this.inhalt = inhalt;
+			this.laenge = laenge;
+			this.sprache = sprache;
+		}
+	}
 
-    public static void clearClipboard() {
-	StringSelection	stringSelection	= new StringSelection("");
-	Clipboard	clpbrd		= Toolkit.getDefaultToolkit().getSystemClipboard();
-	clpbrd.setContents(stringSelection, null);
-    }
+	/* Methoden */
+	// Möglichkeit ein Wort einzugeben.
+	public void inhalteingeben() throws CustomUnchecked {
+		String eingabe;
+		eingabe = JOptionPane.showInputDialog("Bitte geben Sie ein Wort ein:");
+		if (eingabe.length() >0 || eingabe == "") {
+			this.inhalt = eingabe;
+		} else {
+			fehler.setFehler(10);
+			throw fehler;
+		}
+	}
 
-    public static void setClipboard(String content) {
-	StringSelection	stringSelection	= new StringSelection(content);
-	Clipboard	clpbrd		= Toolkit.getDefaultToolkit().getSystemClipboard();
-	clpbrd.setContents(stringSelection, null);
-    }
+	// Overloaded eingeben() mit der Möglichkeit das Wort bereits mitzugeben.
+	public void inhalteingeben(String eingabe) throws CustomUnchecked {
+		if (eingabe.length() > 0 || eingabe == "") {
+			this.inhalt = eingabe;
+		} else {
+			fehler.setFehler(8);
+			throw fehler;
+		}
+		this.deflaenge();
+	}
+
+	public void spracheeingeben() throws CustomUnchecked {
+		String eingabe;
+		eingabe = JOptionPane.showInputDialog("Bitte geben Sie die Sprache des Wortes ein: ");
+		if (eingabe.length() > 0 || sprache == "") {
+			this.sprache = eingabe;
+		} else {
+			fehler.setFehler(6);
+			throw fehler;
+		}
+	}
+
+	public void spracheeingeben(String sprache) throws CustomUnchecked {
+		if (sprache.length() > 0 || sprache == "") {
+			this.sprache = sprache;
+		} else {
+			fehler.setFehler(6);
+			throw fehler;
+		}
+
+	}
+
+	// Auslesen des Wortes.
+	public String inhaltauslesen() throws CustomUnchecked {
+		if (this.inhalt.length() > 0) {
+			String ausgabe = this.inhalt;
+			return ausgabe;
+		} else {
+			fehler.setFehler(8);
+			throw fehler;
+		}
+	}
+
+	public String spracheauslesen() throws CustomUnchecked {
+		if (this.sprache.length() > 0) {
+			String ausgabe = this.sprache;
+			return ausgabe;
+		} else {
+			fehler.setFehler(9);
+			throw fehler;
+		}
+	}
+
+	// Laenge des Wortes bestimmen.
+	private void deflaenge() {
+		this.laenge = this.inhalt.length();
+	}
+
+	// Laenge des Wortes auslesen.
+	public int laengeauslesen() throws CustomUnchecked {
+		if (this.laenge > 0) {
+			return this.laenge;
+		} else {
+			fehler.setFehler(8);
+			throw fehler;
+		}
+
+	}
+
+	public static void clearClipboard() {
+		StringSelection stringSelection = new StringSelection("");
+		Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clpbrd.setContents(stringSelection, null);
+	}
+
+	public static void setClipboard(String content) {
+		StringSelection stringSelection = new StringSelection(content);
+		Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clpbrd.setContents(stringSelection, null);
+	}
 
 }

@@ -43,7 +43,7 @@ public class Kreditkarte_AT extends Karte {
 		try {
 			if (nrinordnung == true) {
 				for (int i = 0; i < 16; i++) {
-					int wert = super.setwertcc(this.getKartenNummer().charAt(i));
+					int wert = this.setwertcc(this.getKartenNummer().charAt(i));
 					if (0 != i % 2 && i != 0) {
 						summe_even = summe_even + wert;
 					} else {
@@ -73,6 +73,12 @@ public class Kreditkarte_AT extends Karte {
 		return gueltigkeit;
 	}
 
+	public ArrayList<String> createCCNR() {
+		ArrayList<String> ccnr = new ArrayList<String>();
+		ccnr = this.getCCNR();
+		return ccnr;
+	}
+	
 	// Private Methoden
 
 	private ArrayList<String> getCCNR() {

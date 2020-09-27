@@ -7,8 +7,13 @@ import kranchie.java.customExceptions.CustomUnchecked;
 public class Password extends Word {
 	private SecureRandom secrnd = new SecureRandom();
 
+	public Password() throws CustomUnchecked {
+		super();
+	}
+
 	// Erstellt ein zufälliges Passwort der gewünschten Länge.
-	public String genpasswd(int laenge) {
+	public String genpasswd(int laenge) throws CustomUnchecked {
+		CustomUnchecked fehler = new CustomUnchecked("woerter");
 		final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+-&$0123456789";
 		char buchstabe;
 		String rnd_password = "";
@@ -21,9 +26,10 @@ public class Password extends Word {
 		try {
 			Password.setClipboard(this.inhaltauslesen());
 			return this.inhaltauslesen();
-		} catch (CustomUnchecked e) {
-			String fehler = e.getFehler();
-			return fehler;
+		} catch (CustomUnchecked cu) {
+			fehler.setFehler(11);
+			throw fehler;
 		}
+
 	}
 }

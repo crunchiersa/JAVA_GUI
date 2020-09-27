@@ -10,20 +10,21 @@ import kranchie.java.dateien.Datei;
 
 public class DiceWord_DB extends DiceWord {
 
-	private String path, fullpath, dbfile, url, dbtype, ip, port, database, userName, password, drivercomp;
+	private String fullpath, url, dbtype, ip, port, database, userName, password, drivercomp;
 	// If Timeformat on server differs from UTC timestamps will be read incorrectly!
 	private final String timezone = "?serverTimezone=UTC";
+	private Connection conn = null;
 
-	public DiceWord_DB() {
+	public DiceWord_DB() throws CustomUnchecked {
 		super();
 	}
 
-	public DiceWord_DB(String dbtype) {
+	public DiceWord_DB(String dbtype) throws CustomUnchecked {
 		super();
 		this.dbtype = dbtype;
 	}
 
-	public DiceWord_DB(String ip, String port, String database, String userName, String password) {
+	public DiceWord_DB(String ip, String port, String database, String userName, String password) throws CustomUnchecked {
 		super();
 		this.ip = ip;
 		this.port = port;
@@ -35,7 +36,7 @@ public class DiceWord_DB extends DiceWord {
 		this.setUrl();
 	}
 
-	public DiceWord_DB(String username, String password) {
+	public DiceWord_DB(String username, String password) throws CustomUnchecked {
 		super();
 		this.ip = "10.10.60.7"; // Should be adjusted to your local Settings.
 		this.port = "3306"; // Should be adjusted to your local Settings.
@@ -137,10 +138,8 @@ public class DiceWord_DB extends DiceWord {
 	public void setpassword(String password) {
 		this.password = password;
 	}
-
-	@Override
-	public String retrieveDiceWordfromDatabase(String zuordnung, String column) throws SQLException {
-		Connection conn = null;
+	
+	private void setConn() throws SQLException {
 		if (this.dbtype == "sqlite") {
 			conn = DriverManager.getConnection(this.fullpath);
 		} else if (this.dbtype == "mysql") {
@@ -148,6 +147,11 @@ public class DiceWord_DB extends DiceWord {
 		} else {
 			throw new SQLException("Kein Datenbanktyp definiert!");
 		}
+	}
+
+	@Override
+	public String retrieveDiceWordfromDatabase(String zuordnung, String column) throws SQLException {
+		this.setConn();
 		Statement st = conn.createStatement();
 		String query = "SELECT " + column + " FROM diceWord WHERE Wurf = " + zuordnung;
 		ResultSet res = st.executeQuery(query);
@@ -161,15 +165,7 @@ public class DiceWord_DB extends DiceWord {
 
 	@Override
 	public String retrievefromDB(String select, String table, String column, String searchpattern) throws SQLException {
-		// try {
-		Connection conn = null;
-		if (this.dbtype == "sqlite") {
-			conn = DriverManager.getConnection(this.fullpath);
-		} else if (this.dbtype == "mysql") {
-			conn = DriverManager.getConnection(this.url, this.userName, this.password);
-		} else {
-			throw new SQLException("Kein Datenbanktyp definiert!");
-		}
+		this.setConn();
 		Statement st = conn.createStatement();
 		String query = "Select " + select + " FROM " + table + " Where " + column + " = " + searchpattern;
 		ResultSet res = st.executeQuery(query);
